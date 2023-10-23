@@ -2,7 +2,7 @@
 
 ## Initialisation du dépôt
 
-'''bash
+```bash
 git init
 git remote add origin SSH_DU_REPO
-'''
+```
