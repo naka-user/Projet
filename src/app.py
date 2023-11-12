@@ -14,7 +14,7 @@ from sklearn.metrics import classification_report
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 import joblib
 import streamlit as st
-from sklearn.metrics import r2_score
+import io
 
 
 import warnings
@@ -61,7 +61,24 @@ elif page == pages[1]:
 
     st.write("Summary of the dataframe.")
 
-    st.write(df.info())
+    def get_df_info(df):
+        buffer = io.StringIO ()
+        df.info (buf=buffer)
+        lines = buffer.getvalue ().split ('\n')
+        # lines to print directly
+        lines_to_print = [0, 1, 2, -2, -3]
+        for i in lines_to_print:
+            st.write (lines [i])
+        # lines to arrange in a df
+        list_of_list = []
+        for x in lines [5:-3]:
+            list = x.split ()
+            list_of_list.append (list)
+        info_df = pd.DataFrame (list_of_list, columns=['index', 'Column', 'Non-null-Count', 'null', 'Dtype'])
+        info_df.drop (columns=['index', 'null'], axis=1, inplace=True)
+        st.dataframe(info_df)
+
+    get_df_info(df)
 
     st.write("Descriptive statistics of the dataframe.")
 
@@ -79,18 +96,6 @@ elif page == pages[1]:
 
 elif page == pages[2]:
     st.write("### Data analysis")
-    
-    # fig = sns.displot(x='price', data=df, kde=True)
-    # plt.title("Distribution de la variable cible price")
-    # st.pyplot(fig)
-    
-    # fig2 = px.scatter(df, x="price", y="area", title="Evolution du prix en fonction de la surface")
-    # st.plotly_chart(fig2)
-    
-    # fig3, ax = plt.subplots()
-    # sns.heatmap(df.corr(), ax=ax)
-    # plt.title("Matrice de corrélation des variables du dataframe")
-    # st.write(fig3)
 
     test = df['Etiquette_DPE'].value_counts() / len(df) * 100
     values = np.array(df['Etiquette_DPE'].value_counts() / len(df) * 100)
@@ -181,42 +186,47 @@ elif page == pages[3]:
     y = df_prep['Etiquette_DPE']
     
     # PCA
-    pca = PCA()
+    pca = PCA(n_components=0.994)
     pca.fit(X)
     X_pca = pca.transform(X)
     
     # Split
     X_train, X_test, y_train, y_test = train_test_split(X_pca, y, test_size=0.2, random_state=0, stratify=y)
-    
-    lr = joblib.load("lr_model.joblib")
-    rf = joblib.load("rf_model.joblib")
-    gbc = joblib.load("gbc_model.joblib")
-    svm = joblib.load("svm_model.joblib")
-    
-    y_pred_lr=lr.predict(X_test)
 
-    y_pred_rf=rf.predict(X_test)
-
-    y_pred_svm=svm.predict(X_test)
+    lrmodelpath = os.path.join('..','trained_models','lr_model.joblib')
+    rfmodelpath = os.path.join('..','trained_models','rf_model.joblib')
+    gbcmodelpath = os.path.join('..','trained_models','gbc_model.joblib')
+    svmmodelpath = os.path.join('..','trained_models','svm_model.joblib')
     
-    y_pred_gbc=gbc.predict(X_test)
+    lr = joblib.load(lrmodelpath)
+    rf = joblib.load(rfmodelpath)
+    gbc = joblib.load(gbcmodelpath)
+    svm = joblib.load(svmmodelpath)
+    
+    y_pred_lr=lr.predict(X_train)
 
-    y_test_gb = np.zeros(len(y_test))
-    y_test_gb[y_test=='A']=0
-    y_test_gb[y_test=='B']=1
-    y_test_gb[y_test=='C']=2
-    y_test_gb[y_test=='D']=3
-    y_test_gb[y_test=='E']=4
-    y_test_gb[y_test=='F']=5
-    y_test_gb[y_test=='G']=6
+    y_pred_rf=rf.predict(X_train)
+
+    y_pred_svm=svm.predict(X_train)
+    
+    y_pred_gbc=gbc.predict(X_train)
+
+    y_train_gb = np.zeros(len(y_train))
+    y_train_gb[y_train=='A']=0
+    y_train_gb[y_train=='B']=1
+    y_train_gb[y_train=='C']=2
+    y_train_gb[y_train=='D']=3
+    y_train_gb[y_train=='E']=4
+    y_train_gb[y_train=='F']=5
+    y_train_gb[y_train=='G']=6
 
     array_dict = {0.: 'A', 1.: 'B', 2.: 'C', 3.: 'D', 4.: 'E', 5.: 'F', 6.:'G'}
-    y_test_gb = [array_dict[i] for i in y_test_gb]
+    y_train_gb = [array_dict[i] for i in y_train_gb]
     y_pred_gbc = [array_dict[i] for i in y_pred_gbc]
     
     choose_model = st.selectbox(label = "Model", options = ['Logisitic Regression', 'Random Forest', 'XGBoost', 'SVM'])
     
-    def train_model(choose_model, y_test) : 
+    def train_model(choose_model, y_train) : 
         if choose_model == 'Logisitic Regression' :
             y_pred = y_pred_lr
         elif choose_model == 'Random Forest' :
@@ -226,12 +236,9 @@ elif page == pages[3]:
         elif choose_model == 'SVM' :
             y_pred = y_pred_svm
         
-        st.dataframe(pd.DataFrame(classification_report(y_test, y_pred, output_dict=True)).transpose())
-
+        return y_pred
     
-    st.write("F1 score", train_model(choose_model, y_test))
-
-
+    st.dataframe(pd.DataFrame(classification_report(y_train, train_model(choose_model, y_train), output_dict=True)).transpose())
 
 
 
