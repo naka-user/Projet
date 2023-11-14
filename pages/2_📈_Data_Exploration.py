@@ -22,7 +22,7 @@ st.header("Part 2 : Data Exploration")
 
 st.markdown(
     """
-    - The dataset used for the data exploration page was modified to have no missing values. Columns have been modified. \n
+    - The dataset used for the data exploration was modified to have no missing values. Columns have been modified. \n
     - The global visualization of the data and relationships between variables using sns.pairplot is not used with all features because the dataset has 66 features. \n
     - Duplicated rows of the dataset are not dropped because F1 score is better. \n
 """

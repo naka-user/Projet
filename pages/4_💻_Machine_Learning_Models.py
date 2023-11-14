@@ -118,11 +118,11 @@ array_dict = {0.: 'A', 1.: 'B', 2.: 'C', 3.: 'D', 4.: 'E', 5.: 'F', 6.:'G'}
 y_train_gb = [array_dict[i] for i in y_train_gb]
 y_pred_gbc = [array_dict[i] for i in y_pred_gbc]
 
-choose_model = st.selectbox("Choose the model", options=['Logisitic Regression', 'Random Forest', 'XGBoost', 'SVM'], index=None, placeholder="Choose model...")
+choose_model = st.selectbox("Choose the model", options=['Logistic Regression', 'Random Forest', 'XGBoost', 'SVM'], index=None, placeholder="Choose model...")
 
 def use_model(choose_model, y_train) :
 
-    if choose_model == 'Logisitic Regression' :
+    if choose_model == 'Logistic Regression' :
         y_pred = y_pred_lr
     
     if choose_model == 'Random Forest' :
@@ -141,7 +141,7 @@ if choose_model != None:
     st.markdown(
         """
         **Results** :
-        - F1 score is not good for each class with all trained machine learning models. F1 score is less than 0.50. \n
+        - F1 score is not good for each category with all trained machine learning models. F1 score is less than 0.50. \n
         **Optimization** :
         - Oversampling the dataset with SMOTE to balance the class distribution. \n
         - Use neural network model.
