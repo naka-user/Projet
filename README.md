@@ -3,11 +3,11 @@
 # Streamlit app
 
 
-The app was build from results of an energy performance diagnostic housing dataset. \n
+The app was build from results of an energy performance diagnostic housing dataset.
 
-The app predict the energy performance diagnostic from other housing features dataset. \n
+The app predict the energy performance diagnostic from other housing features dataset.
 
-Repository of EDA : https://github.com/naka-user/Project-Artefact \n
+Repository of EDA : https://github.com/naka-user/Project-Artefact
 
 The app has 4 parts :
 
