@@ -141,9 +141,10 @@ if choose_model != None:
     st.markdown(
         """
         **Results** :
-        - F1 score is not good for each class with all machine learning models. F1 score is less than 0.50. \n
-        **Future improvement** :
+        - F1 score is not good for each class with all trained machine learning models. F1 score is less than 0.50. \n
+        **Optimization** :
         - Oversampling the dataset with SMOTE to balance the class distribution. \n
+        - Use neural network model.
     """
     )
 
